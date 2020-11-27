@@ -1,0 +1,34 @@
+{
+  "name": "realworld",
+  "version": "1.0.0",
+  "description": "vue nuxt realword",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "commit": "git-cz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shibin-cli/realworld.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shibin-cli/realworld/issues"
+  },
+  "homepage": "https://github.com/shibin-cli/realworld#readme",
+  "devDependencies": {
+    "git-cz": "^4.7.4"
+  },
+  "dependencies": {
+    "nuxt": "^2.14.7",
+    "axios": "^0.21.0",
+    "cookieparser": "^0.1.0",
+    "dayjs": "^1.9.6",
+    "js-cookie": "^2.2.1",
+    "markdown-it": "^12.0.2"
+  }
+}
