@@ -7,22 +7,22 @@
         <ul class="nav navbar-nav pull-xs-right">
           <li class="nav-item">
             <!-- Add "active" class when you're on that page" -->
-            <nuxt-link class="nav-link active" to="/">Home</nuxt-link>
+            <nuxt-link class="nav-link" exact to="/">Home</nuxt-link>
           </li>
 
           <template v-if="user">
             <li class="nav-item">
-              <nuxt-link class="nav-link" to="/editor">
+              <nuxt-link class="nav-link" exact to="/editor">
                 <i class="ion-compose"></i>&nbsp;New Post
               </nuxt-link>
             </li>
             <li class="nav-item">
-              <nuxt-link class="nav-link" to="/settings">
+              <nuxt-link class="nav-link" exact to="/settings">
                 <i class="ion-gear-a"></i>&nbsp;Settings
               </nuxt-link>
             </li>
             <li class="nav-item">
-              <nuxt-link class="nav-link" to="/profile/shibin">
+              <nuxt-link class="nav-link" exact to="/profile/shibin">
                 <img class="user-pic" :src="user.image"/>{{ user.username }}
                 </nuxt-link>
             </li>

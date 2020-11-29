@@ -1,6 +1,6 @@
-import {request} from '@/plugins/request'
+import { request } from '@/plugins/request'
 
-export const login = ({email, password}) => {
+export const login = ({ email, password }) => {
     return request
         .post("/users/login", {
             user: {
@@ -9,7 +9,7 @@ export const login = ({email, password}) => {
             }
         })
 }
-export const register = ({username, email, password}) =>{
+export const register = ({ username, email, password }) => {
     return request
         .post("/users", {
             user: {
@@ -17,5 +17,11 @@ export const register = ({username, email, password}) =>{
                 email,
                 password,
             }
+        })
+}
+export const updateUser = user => {
+    return request
+        .put("/user", {
+            user
         })
 }

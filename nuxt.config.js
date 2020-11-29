@@ -1,5 +1,6 @@
 export default {
     router: {
+        linkActiveClass:"active",
         extendRoutes(routes, resolve) {
             // 删除默认生成的路由
             routes.splice(0)
@@ -30,6 +31,10 @@ export default {
                     path: '/editor',
                     component: resolve(__dirname, 'pages/editor'),
                     name: 'editor'
+                }, {
+                    path: '/editor/:slug',
+                    component: resolve(__dirname, 'pages/editor'),
+                    name: 'updateEditor'
                 }, {
                     path: '/article/:slug',
                     component: resolve(__dirname, 'pages/article'),

@@ -147,29 +147,32 @@ export default {
     // const { data } = await ;
     let getArticleData =
       store.state.user && tab === "your_feed" ? getFeedArticles : getArticles;
-
-    const res = await Promise.all([
-      getArticleData({
+    try {
+      const res = await Promise.all([
+        getArticleData({
+          limit,
+          offset: limit * (page - 1),
+          tag: tag,
+        }),
+        getTag(),
+      ]);
+      const [{ data }, { data: tagData }] = res;
+      data.articles.forEach((article) => {
+        article.favoriteDisabled = false;
+      });
+      return {
+        articles: data.articles,
+        articlesCount: data.articlesCount,
+        tags: tagData.tags,
         limit,
-        offset: limit * (page - 1),
-        tag: tag,
-      }),
-      getTag(),
-    ]);
-    const [{ data }, { data: tagData }] = res;
-     data.articles.forEach((article) => {
-      article.favoriteDisabled = false;
-    });
-    return {
-      articles: data.articles,
-      articlesCount: data.articlesCount,
-      tags: tagData.tags,
-      limit,
-      page,
-      tag,
-      loading: false,
-      tab: tab || "global_feed",
-    };
+        page,
+        tag,
+        loading: false,
+        tab: tab || "global_feed",
+      };
+    } catch (error) {
+      console.log(error);
+    }
   },
   computed: {
     totalPage() {
@@ -187,7 +190,7 @@ export default {
           article.favorited = data.article.favorited;
           article.favoritesCount = data.article.favoritesCount;
         }
-      }finally {
+      } finally {
         article.favoriteDisabled = false;
       }
     },
