@@ -6,7 +6,7 @@ export const request = axios.create({
 
 export default ({
     store,
-    redirect 
+    redirect
 }) => {
     request.interceptors.request.use(function (config) {
         const user = store.state.user
@@ -21,7 +21,7 @@ export default ({
         if (err.response && err.response.status === 401) {
             redirect('/login')
         }
-        return err
+        return Promise.reject(err)
     })
 }
 
