@@ -4,7 +4,7 @@
       <div class="row">
         <div class="col-md-6 offset-md-3 col-xs-12">
           <h1 class="text-xs-center">Your Settings</h1>
-            <ul class="error-messages">
+          <ul class="error-messages">
             <li v-for="(messages, field) in errors" :key="field">
               {{ field }} {{ messages.join(",") }}
             </li>
@@ -53,13 +53,16 @@
                   v-model="user.password"
                 />
               </fieldset>
-              <button class="btn btn-lg btn-primary pull-xs-right" :disabled="submitDisabled">
+              <button
+                class="btn btn-lg btn-primary pull-xs-right"
+                :disabled="submitDisabled"
+              >
                 Update Settings
               </button>
             </fieldset>
           </form>
           <hr />
-          <button class="btn btn-outline-danger" @click="logout" >
+          <button class="btn btn-outline-danger" @click="logout">
             Or click here to logout.
           </button>
         </div>
@@ -89,15 +92,15 @@ export default {
         image: "",
         bio: "",
       },
-      errors:[],
-      submitDisabled:false
+      errors: [],
+      submitDisabled: false,
     };
   },
   created() {
     this.user.username = this.userState.username;
     this.user.email = this.userState.email;
-    this.user.bio = this.userState.bio||'';
-    this.user.image = this.userState.image||'';
+    this.user.bio = this.userState.bio || "";
+    this.user.image = this.userState.image || "";
   },
 
   methods: {
@@ -108,20 +111,19 @@ export default {
       this.$router.push("/");
     },
     async onSubmit() {
-      this.submitDisabled =true
+      this.submitDisabled = true;
       try {
-        let user ={...this.user}
-        console.log(user)
-        if(!user.password){
-          delete user.password
+        let user = { ...this.user };
+        if (!user.password) {
+          delete user.password;
         }
         const { data } = await updateUser(user);
+        this.$store.commit("setUser", data.user);
       } catch (e) {
-        console.log(e)
+        console.log(e);
         this.errors = e.response.data.errors;
-
       } finally {
-        this.submitDisabled=false
+        this.submitDisabled = false;
       }
     },
   },
