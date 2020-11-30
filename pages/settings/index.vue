@@ -119,6 +119,7 @@ export default {
         }
         const { data } = await updateUser(user);
         this.$store.commit("setUser", data.user);
+        Cookie.set("user", data.user);
       } catch (e) {
         console.log(e);
         this.errors = e.response.data.errors;
