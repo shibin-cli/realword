@@ -1,98 +1,180 @@
 <template>
   <div class="profile-page">
+    <div class="user-info">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12 col-md-10 offset-md-1">
+            <img class="user-img" :src="profile.image" />
+            <h4>{{ profile.username }}</h4>
+            <p>
+              {{ profile.bio }}
+            </p>
+            <nuxt-link
+              class="btn btn-sm btn-outline-secondary action-btn"
+              :to="{
+                name: 'settings',
+              }"
+              v-if="profile.username === user.username"
+            >
+              <i class="ion-gear-a"> Edit Profile Settings</i>
+            </nuxt-link>
+            <button
+              class="btn btn-sm btn-outline-secondary action-btn"
+              :class="{ active: profile.following }"
+              @click="follow"
+              :disabled="followDisabled"
+              v-else
+            >
+              <i class="ion-plus-round"></i>
+              &nbsp;
+              {{
+                `${profile.following ? "Unfollow" : "Follow"} ${
+                  profile.username
+                }`
+              }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <div class="user-info">
     <div class="container">
       <div class="row">
-
         <div class="col-xs-12 col-md-10 offset-md-1">
-          <img src="http://i.imgur.com/Qr71crq.jpg" class="user-img" />
-          <h4>Eric Simons</h4>
-          <p>
-            Cofounder @GoThinkster, lived in Aol's HQ for a few months, kinda looks like Peeta from the Hunger Games
-          </p>
-          <button class="btn btn-sm btn-outline-secondary action-btn">
-            <i class="ion-plus-round"></i>
-            &nbsp;
-            Follow Eric Simons 
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <div class="container">
-    <div class="row">
-
-      <div class="col-xs-12 col-md-10 offset-md-1">
-        <div class="articles-toggle">
-          <ul class="nav nav-pills outline-active">
-            <li class="nav-item">
-              <a class="nav-link active" href="">My Articles</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="">Favorited Articles</a>
-            </li>
-          </ul>
-        </div>
-
-        <div class="article-preview">
-          <div class="article-meta">
-            <a href=""><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
-            <div class="info">
-              <a href="" class="author">Eric Simons</a>
-              <span class="date">January 20th</span>
-            </div>
-            <button class="btn btn-outline-primary btn-sm pull-xs-right">
-              <i class="ion-heart"></i> 29
-            </button>
-          </div>
-          <a href="" class="preview-link">
-            <h1>How to build webapps that scale</h1>
-            <p>This is the description for the post.</p>
-            <span>Read more...</span>
-          </a>
-        </div>
-
-        <div class="article-preview">
-          <div class="article-meta">
-            <a href=""><img src="http://i.imgur.com/N4VcUeJ.jpg" /></a>
-            <div class="info">
-              <a href="" class="author">Albert Pai</a>
-              <span class="date">January 20th</span>
-            </div>
-            <button class="btn btn-outline-primary btn-sm pull-xs-right">
-              <i class="ion-heart"></i> 32
-            </button>
-          </div>
-          <a href="" class="preview-link">
-            <h1>The song you won't ever stop singing. No matter how hard you try.</h1>
-            <p>This is the description for the post.</p>
-            <span>Read more...</span>
-            <ul class="tag-list">
-              <li class="tag-default tag-pill tag-outline">Music</li>
-              <li class="tag-default tag-pill tag-outline">Song</li>
+          <div class="articles-toggle">
+            <ul class="nav nav-pills outline-active">
+              <li class="nav-item">
+                <nuxt-link
+                  class="nav-link"
+                  :to="{
+                    name: 'profile',
+                    query: {
+                      tab: 'my',
+                    },
+                    params: {
+                      usename: profile.username,
+                    },
+                  }"
+                  :class="{ active: tab === 'my' }"
+                  exact
+                  >My Articles</nuxt-link
+                >
+              </li>
+              <li class="nav-item">
+                <nuxt-link
+                  class="nav-link"
+                  exact
+                  :class="{ active: tab === 'favorited' }"
+                  :to="{
+                    name: 'profile',
+                    query: {
+                      tab: 'favorited',
+                    },
+                    params: {
+                      usename: profile.username,
+                    },
+                  }"
+                  >Favorited Articles</nuxt-link
+                >
+              </li>
             </ul>
-          </a>
+          </div>
+
+          <ArticleList :articles="articles" />
+          <nav v-if="totalPage > 1">
+            <ul>
+              <li
+                class="page-item"
+                v-for="item in totalPage"
+                :key="item"
+                :class="{ active: item === page }"
+              >
+                <nuxt-link
+                  class="page-link"
+                  :to="{ name: 'profile', query: { page: item, tab } }"
+                  >{{ item }}</nuxt-link
+                >
+              </li>
+            </ul>
+          </nav>
         </div>
-
-
       </div>
-
     </div>
   </div>
-
-</div>
 </template>
 
 <script>
+import { mapState } from "vuex";
+import { getArticles } from "@/api/article";
+import { getProfile, followUser, unfollowUser } from "@/api/user";
+import ArticleList from "@/components/article-list/index.vue";
+
 export default {
   middleware: "authenticated",
-
-}
+  components: {
+    ArticleList,
+  },
+  watchQuery: ["tab", "page"],
+  async asyncData(ctx) {
+    const { query, params, store } = ctx;
+    let limit = 5;
+    let page = Number(query.page) || 1;
+    try {
+      let opts = {
+        limit,
+        offset: limit * (page - 1),
+        page:page
+      };
+      if (query.tab === "favorited") {
+        opts.favorited = params.username;
+      } else {
+        opts.author = params.username;
+        query.tab = query.tab || "my";
+      }
+      const [articlesData, profileData] = await Promise.all([
+        getArticles(opts),
+        getProfile(params.username),
+      ]);
+      let  articlesCount =  articlesData.data.articlesCount
+      
+      return {
+        articles: articlesData.data.articles,
+        profile: profileData.data.profile,
+        tab: query.tab,
+        articlesCount,
+        limit,
+        page
+      };
+    } catch (err) {
+      ctx.error({ statusCode: 404, message: "Profile not found" });
+    }
+  },
+  computed: {
+    ...mapState(["user"]),
+    totalPage() {
+      return Math.ceil(this.articlesCount / this.limit);
+    },
+  },
+  data() {
+    return {
+      followDisabled: false,
+    };
+  },
+  methods: {
+    async follow() {
+      let fn = this.profile.following ? unfollowUser : followUser;
+      this.followDisabled = true;
+      try {
+        const { data } = await fn(this.profile.username);
+        this.profile.following = data.profile.following;
+      } catch (error) {
+      } finally {
+        this.followDisabled = false;
+      }
+    },
+  },
+};
 </script>
 
 <style>
-
 </style>

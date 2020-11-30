@@ -1,6 +1,11 @@
-import { request } from '@/plugins/request'
+import {
+    request
+} from '@/plugins/request'
 
-export const login = ({ email, password }) => {
+export const login = ({
+    email,
+    password
+}) => {
     return request
         .post("/users/login", {
             user: {
@@ -9,7 +14,11 @@ export const login = ({ email, password }) => {
             }
         })
 }
-export const register = ({ username, email, password }) => {
+export const register = ({
+    username,
+    email,
+    password
+}) => {
     return request
         .post("/users", {
             user: {
@@ -24,4 +33,13 @@ export const updateUser = user => {
         .put("/user", {
             user
         })
+}
+export const getProfile = username => {
+    return request.get(`profiles/${username}`)
+}
+export const followUser = username => {
+    return request.post(`profiles/${username}/follow`)
+}
+export const unfollowUser = username => {
+    return request.delete(`profiles/${username}/follow`)
 }

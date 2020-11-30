@@ -46,9 +46,16 @@
       <button
         class="btn btn-sm btn-outline-secondary"
         :class="{ active: article.author.following }"
+        :disabled="followDisabled"
+        @click="follow"
       >
         <i class="ion-plus-round"></i>
-        &nbsp; Follow Eric Simons <span class="counter">(10)</span>
+        &nbsp;
+        {{
+          `${article.author.following ? "Unfollow" : "Follow"} ${
+            article.author.username
+          }`
+        }}
       </button>
       &nbsp;&nbsp;
       <button
@@ -67,6 +74,7 @@
 <script>
 import { mapState } from "vuex";
 import { addFavorite, cancelFavorite, deleteArticle } from "@/api/article";
+import { unfollowUser, followUser } from "@/api/user";
 export default {
   props: {
     article: {
@@ -79,6 +87,7 @@ export default {
   data() {
     return {
       delDisabled: false,
+      followDisabled: false,
     };
   },
   methods: {
@@ -106,6 +115,17 @@ export default {
         });
       } catch (error) {
         this.delDisabled = false;
+      }
+    },
+    async follow() {
+      let fn = this.article.author.following ? unfollowUser : followUser;
+      this.followDisabled = true;
+      try {
+        const { data } = await fn(this.article.author.username);
+        this.article.author.following = data.profile.following;
+      } catch (error) {
+      } finally {
+        this.followDisabled = false;
       }
     },
   },

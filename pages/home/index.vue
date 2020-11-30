@@ -22,6 +22,7 @@
                       tab: 'your_feed',
                     },
                   }"
+                  exact
                   >Your Feed</nuxt-link
                 >
               </li>
@@ -32,6 +33,7 @@
                   :to="{
                     name: 'home',
                   }"
+                  exact
                   >Global Feed
                 </nuxt-link>
               </li>
@@ -43,53 +45,8 @@
               </li>
             </ul>
           </div>
-          <div class="article-preview" v-show="loading">
-            Loading articles...
-          </div>
-          <div
-            class="article-preview"
-            v-for="article in articles"
-            :key="article.slug"
-          >
-            <div class="article-meta">
-              <nuxt-link :to="'/profile/' + article.author.username"
-                ><img :src="article.author.image"
-              /></nuxt-link>
-              <div class="info">
-                <nuxt-link
-                  class="author"
-                  :to="'/profile/' + article.author.username"
-                  >{{ article.author.username }}</nuxt-link
-                >
-                <span class="date">{{
-                  article.createdAt | date("MMMM DD, YYYY")
-                }}</span>
-              </div>
-              <button
-                class="btn btn-outline-primary btn-sm pull-xs-right"
-                :class="{ active: article.favorited }"
-                :disabled="article.favoriteDisabled"
-                @click="onFavorite(article)"
-              >
-                <i class="ion-heart"></i> {{ article.favoritesCount }}
-              </button>
-            </div>
-            <nuxt-link class="preview-link" :to="'/article/' + article.slug">
-              <h1>{{ article.title }}</h1>
-              <p>{{ article.description }}</p>
-              <span>Read more...</span>
-            </nuxt-link>
-            <ul class="tag-list">
-              <li
-                class="tag-default tag-pill tag-outline"
-                v-for="tag in article.tagList"
-                :key="tag"
-              >
-                {{ tag }}
-              </li>
-            </ul>
-          </div>
-          <nav>
+          <ArticleList :articles="articles"/>
+          <nav v-if="totalPage>1">
             <ul>
               <li
                 class="page-item"
@@ -137,9 +94,11 @@ import {
 } from "@/api/article";
 import { mapState } from "vuex";
 import dayjs from "dayjs";
+import ArticleList from '@/components/article-list/index.vue'
 
 export default {
   watchQuery: ["page", "tag", "tab"],
+  components:{ArticleList},
   async asyncData({ query, store }) {
     let page = Number(query.page) || 1;
     let { tag, tab = "global_feed" } = query;
