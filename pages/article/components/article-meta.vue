@@ -22,7 +22,7 @@
       >
       <span class="date">{{ article.createdAt | date("MMM DD, YYYY") }}</span>
     </div>
-    <template v-if="article.author.username === user.username">
+    <template v-if="user&&(article.author.username === user.username)">
       <nuxt-link
         class="btn btn-outline-secondary btn-sm"
         :to="{

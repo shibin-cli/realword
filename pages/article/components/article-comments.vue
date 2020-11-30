@@ -11,14 +11,14 @@
         ></textarea>
       </div>
       <div class="card-footer">
-        <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img" />
+        <img :src="(user&&user.image)||'http://i.imgur.com/Qr71crq.jpg'" class="comment-author-img" />
         <button class="btn btn-sm btn-primary" :disabled="commentDisabled">
           Post Comment
         </button>
       </div>
     </form>
 
-    <div class="card" v-for="(comment,index) in comments" :key="comment.id">
+    <div class="card" v-for="(comment, index) in comments" :key="comment.id">
       <div class="card-block">
         <p class="card-text">{{ comment.body }}</p>
       </div>
@@ -33,16 +33,27 @@
           <img :src="comment.author.image" class="comment-author-img" />
         </nuxt-link>
         &nbsp;
-        <a href="" class="comment-author">{{ comment.author.username }}</a>
+        <nuxt-link
+          :to="{
+            name: 'profile',
+            params: { username: comment.author.username },
+          }"
+          class="comment-author"
+          >{{ comment.author.username }}</nuxt-link
+        >
         <span class="date-posted">{{
           comment.createdAt | date("MMM DD, YYYY")
         }}</span>
         <span
           class="mod-options"
-          v-if="user.username === comment.author.username"
+          v-if="user && user.username === comment.author.username"
         >
           <!-- <i class="ion-edit"></i> -->
-          <i class="ion-trash-a" @click="delComment(comment.id,index)" :disabled="deleteDisabled"></i>
+          <i
+            class="ion-trash-a"
+            @click="delComment(comment.id, index)"
+            :disabled="deleteDisabled"
+          ></i>
         </span>
       </div>
     </div>
@@ -67,7 +78,7 @@ export default {
       comments: [],
       comment: "",
       commentDisabled: false,
-      deleteDisabled:false
+      deleteDisabled: false,
     };
   },
   async created() {
@@ -88,10 +99,10 @@ export default {
         this.commentDisabled = false;
       }
     },
-    async delComment(id,index) {
+    async delComment(id, index) {
       try {
-         await deleteComment(this.article.slug, id);
-         this.comments.splice(index,1)
+        await deleteComment(this.article.slug, id);
+        this.comments.splice(index, 1);
       } catch (error) {
       } finally {
       }

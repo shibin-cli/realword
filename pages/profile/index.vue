@@ -14,7 +14,7 @@
               :to="{
                 name: 'settings',
               }"
-              v-if="profile.username === user.username"
+              v-if="user&&(profile.username === user.username)"
             >
               <i class="ion-gear-a"> Edit Profile Settings</i>
             </nuxt-link>
@@ -110,7 +110,7 @@ import { getProfile, followUser, unfollowUser } from "@/api/user";
 import ArticleList from "@/components/article-list/index.vue";
 
 export default {
-  middleware: "authenticated",
+  // middleware: "authenticated",
   components: {
     ArticleList,
   },
