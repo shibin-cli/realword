@@ -117,12 +117,10 @@ export default {
         if (!user.password) {
           delete user.password;
         }
-        const res = await updateUser(user);
+        const { data } = await updateUser(user);
         this.$store.commit("setUser", data.user);
         Cookie.set("user", data.user);
       } catch (e) {
-        console.log(e)
-        console.log(e.response);
         this.errors = e.response.data.errors;
       } finally {
         this.submitDisabled = false;
