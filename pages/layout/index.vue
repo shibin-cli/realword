@@ -3,7 +3,9 @@
     <!-- 顶部导航 -->
     <nav class="navbar navbar-light">
       <div class="container">
-        <nuxt-link class="navbar-brand" :to="{name:'home'}">conduit</nuxt-link>
+        <nuxt-link class="navbar-brand" :to="{ name: 'home' }"
+          >conduit</nuxt-link
+        >
         <ul class="nav navbar-nav pull-xs-right">
           <li class="nav-item">
             <!-- Add "active" class when you're on that page" -->
@@ -22,9 +24,16 @@
               </nuxt-link>
             </li>
             <li class="nav-item">
-              <nuxt-link class="nav-link" exact to="/profile/shibin">
-                <img class="user-pic" :src="user.image"/>{{ user.username }}
-                </nuxt-link>
+              <nuxt-link
+                class="nav-link"
+                exact
+                :to="{
+                  name: 'profile',
+                  params: { username:  user.username },
+                }"
+              >
+                <img class="user-pic" :src="user.image" />{{ user.username }}
+              </nuxt-link>
             </li>
           </template>
           <template v-else>

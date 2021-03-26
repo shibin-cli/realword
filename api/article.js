@@ -31,7 +31,6 @@ export const updateArticle = (article,slug) => {
     })
 }
 export const deleteArticle = slug => {
-    console.log(slug)
     return request.delete(`articles/${slug}`)
 }
 // 收藏
